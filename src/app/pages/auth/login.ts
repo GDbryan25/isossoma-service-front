@@ -19,7 +19,7 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
                 <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                     <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
                         <div class="text-center mb-8">
-                            <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-8 w-16 shrink-0 mx-auto">
+                            <!-- <svg viewBox="0 0 54 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-8 w-16 shrink-0 mx-auto">
                                 <path
                                     fill-rule="evenodd"
                                     clip-rule="evenodd"
@@ -35,7 +35,9 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
                                         fill="var(--primary-color)"
                                     />
                                 </g>
-                            </svg>
+                            </svg> -->
+
+                            <img src="banner/ISOSSOMA_2019_ISOTIPO.png" alt="image not found" class="w-32 h-32 mx-auto mb-8 object-contain" />
                             <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Bienvenido a ISOSSOMA</div>
                             <span class="text-muted-color font-medium">Inicie sesión para continuar</span>
                         </div>
@@ -54,7 +56,7 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
                                 </div>
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Olvidaste tu contraseña?</span>
                             </div>
-                            <p-button label="Iniciar sesión" styleClass="w-full" routerLink="/"></p-button>
+                            <p-button label="Iniciar sesión" styleClass="w-full" routerLink="/dashboard"></p-button>
                         </div>
                     </div>
                 </div>

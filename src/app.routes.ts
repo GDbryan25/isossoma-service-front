@@ -11,9 +11,14 @@ import { UsersComponent } from './app/pages/users/users.component';
 export const appRoutes: Routes = [
     {
         path: '',
+        redirectTo: 'auth/login',
+        pathMatch: 'full'
+    },
+    {
+        path: '',
         component: AppLayout,
         children: [
-            { path: '', component: Dashboard },
+            { path: 'dashboard', component: Dashboard },
             { path: 'gestion/clientes', component: CustomersComponent },
             { path: 'gestion/tarifarios', component: RateSheetComponent },
             { path: 'gestion/usuarios', component: UsersComponent },
