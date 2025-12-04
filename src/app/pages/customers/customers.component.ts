@@ -19,6 +19,8 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Product, ProductService } from '../service/product.service';
+import { CreateCustomer } from '../../models/customers/request/CreateCustomer';
+import { Customer } from '../../models/customers/response/Customer';
 
 interface Column {
     field: string;
@@ -60,15 +62,15 @@ interface ExportColumn {
 export class CustomersComponent {
     productDialog: boolean = false;
 
-    products = signal<Product[]>([]);
+    customers = signal<Customer[]>([]);
 
-    product!: Product;
+    customer!: CreateCustomer;
 
-    selectedProducts!: Product[] | null;
+    selectedCustomers!: Customer[] | null;
 
     submitted: boolean = false;
 
-    statuses!: any[];
+    documentTypes!: any[];
 
     @ViewChild('dt') dt!: Table;
 
@@ -87,18 +89,17 @@ export class CustomersComponent {
     }
 
     ngOnInit() {
-        this.loadDemoData();
+        this.loadData();
     }
 
-    loadDemoData() {
-        this.productService.getProducts().then((data) => {
-            this.products.set(data);
-        });
+    loadData() {
+        // this.productService.getProducts().then((data) => {
+        //     this.customers.set(data);
+        // });
 
-        this.statuses = [
-            { label: 'INSTOCK', value: 'instock' },
-            { label: 'LOWSTOCK', value: 'lowstock' },
-            { label: 'OUTOFSTOCK', value: 'outofstock' }
+        this.documentTypes = [
+            { label: 'DNI', value: 'DNI' },
+            { label: 'RUC', value: 'RUC' }
         ];
 
         this.cols = [
@@ -117,24 +118,24 @@ export class CustomersComponent {
     }
 
     openNew() {
-        this.product = {};
+        this.customer = {};
         this.submitted = false;
         this.productDialog = true;
     }
 
     editProduct(product: Product) {
-        this.product = { ...product };
+        this.customer = { ...product };
         this.productDialog = true;
     }
 
-    deleteSelectedProducts() {
+    deleteSelectedCustomers() {
         this.confirmationService.confirm({
             message: 'Are you sure you want to delete the selected products?',
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.products.set(this.products().filter((val) => !this.selectedProducts?.includes(val)));
-                this.selectedProducts = null;
+                this.customers.set(this.customers().filter((val) => !this.selectedCustomers?.includes(val)));
+                this.selectedCustomers = null;
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
@@ -156,8 +157,8 @@ export class CustomersComponent {
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.products.set(this.products().filter((val) => val.id !== product.id));
-                this.product = {};
+                // this.customers.set(this.customers().filter((val) => val.id !== product.id));
+                this.customer = {};
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
@@ -170,12 +171,12 @@ export class CustomersComponent {
 
     findIndexById(id: string): number {
         let index = -1;
-        for (let i = 0; i < this.products().length; i++) {
-            if (this.products()[i].id === id) {
-                index = i;
-                break;
-            }
-        }
+        // for (let i = 0; i < this.customers().length; i++) {
+        //     if (this.customers()[i].id === id) {
+        //         index = i;
+        //         break;
+        //     }
+        // }
 
         return index;
     }
@@ -202,33 +203,33 @@ export class CustomersComponent {
         }
     }
 
-    saveProduct() {
-        this.submitted = true;
-        let _products = this.products();
-        if (this.product.name?.trim()) {
-            if (this.product.id) {
-                _products[this.findIndexById(this.product.id)] = this.product;
-                this.products.set([..._products]);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Updated',
-                    life: 3000
-                });
-            } else {
-                this.product.id = this.createId();
-                this.product.image = 'product-placeholder.svg';
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Created',
-                    life: 3000
-                });
-                this.products.set([..._products, this.product]);
-            }
+    saveCustomer() {
+        // this.submitted = true;
+        // let _products = this.products();
+        // if (this.product.name?.trim()) {
+        //     if (this.product.id) {
+        //         _products[this.findIndexById(this.product.id)] = this.product;
+        //         this.products.set([..._products]);
+        //         this.messageService.add({
+        //             severity: 'success',
+        //             summary: 'Successful',
+        //             detail: 'Product Updated',
+        //             life: 3000
+        //         });
+        //     } else {
+        //         this.product.id = this.createId();
+        //         this.product.image = 'product-placeholder.svg';
+        //         this.messageService.add({
+        //             severity: 'success',
+        //             summary: 'Successful',
+        //             detail: 'Product Created',
+        //             life: 3000
+        //         });
+        //         this.products.set([..._products, this.product]);
+        //     }
 
-            this.productDialog = false;
-            this.product = {};
-        }
+        //     this.productDialog = false;
+        //     this.product = {};
+        // }
     }
 }
