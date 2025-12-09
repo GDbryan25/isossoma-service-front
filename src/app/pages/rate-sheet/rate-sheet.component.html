@@ -28,105 +28,39 @@
             <th style="width: 3rem">
                 <p-tableHeaderCheckbox />
             </th>
-            <th style="min-width: 16rem">Código</th>
+            <th style="min-width: 16rem">Id Tipo Servicio</th>
             <th pSortableColumn="name" style="min-width:16rem">
-                Nombre
+                Tipo de servicio
                 <p-sortIcon field="name" />
             </th>
             <th pSortableColumn="price" style="min-width: 8rem">
-                Dirección
+                Id Categoria Servicio
                 <p-sortIcon field="price" />
             </th>
             <th pSortableColumn="category" style="min-width:10rem">
-                Tipo de documento
+                Categoria Servicio
                 <p-sortIcon field="category" />
-            </th>
-            <th pSortableColumn="rating" style="min-width: 12rem">
-                Número de documento
-                <p-sortIcon field="rating" />
             </th>
             <th style="min-width: 12rem"></th>
         </tr>
     </ng-template>
-    <ng-template #body let-customer>
+    <ng-template #body let-pricing>
         <tr>
             <td style="width: 3rem">
-                <p-tableCheckbox [value]="customer" />
+                <p-tableCheckbox [value]="pricing" />
             </td>
-            <td style="min-width: 12rem">{{ customer.id }}</td>
-            <td style="min-width: 16rem">{{ customer.name }}</td>
-            <td>{{ customer.address }}</td>
-            <td>{{ customer.documentType }}</td>
-            <td>{{ customer.documentNumber }}</td>
+            <td style="min-width: 12rem">{{ pricing.serviceTypeId }}</td>
+            <td style="min-width: 16rem">{{ pricing.serviceTypeDescription }}</td>
+            <td>{{ pricing.categoryTypeId }}</td>
+            <td>{{ pricing.categoryTypeDescription }}</td>
             <td>
                 <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"
-                    (click)="editProduct(customer)" />
+                    (click)="editProduct(pricing)" />
                 <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
-                    (click)="deleteProduct(customer)" />
+                    (click)="deleteProduct(pricing)" />
             </td>
         </tr>
     </ng-template>
 </p-table>
-
-
-<p-dialog [(visible)]="productDialog" [style]="{ width: '450px' }" header="Detalles del cliente" [modal]="true">
-    <ng-template #content>
-        <div class="flex flex-col gap-6">
-            <div>
-                <label for="name" class="block font-bold mb-3">Nombre</label>
-                <input type="text" pInputText id="name" [(ngModel)]="customer.name" required autofocus fluid />
-                <small class="text-red-500" *ngIf="submitted && !customer.name">Name is required.</small>
-            </div>
-
-            <div>
-                <label for="address" class="block font-bold mb-3">Dirección</label>
-                <input type="text" pInputText id="address" [(ngModel)]="customer.address" required autofocus fluid />
-                <small class="text-red-500" *ngIf="submitted && !customer.address">Name is required.</small>
-            </div>
-
-            <div>
-                <label for="contact" class="block font-bold mb-3">Contacto</label>
-                <input type="text" pInputText id="contact" [(ngModel)]="customer.contact" required autofocus fluid />
-            </div>
-
-            <div>
-                <label for="contact-position" class="block font-bold mb-3">Cargo contacto</label>
-                <input type="text" pInputText id="contact-position" [(ngModel)]="customer.contactPosition" required autofocus fluid />
-            </div>
-
-            <div>
-                <label for="email" class="block font-bold mb-3">Correo</label>
-                <input type="email" pInputText id="email" [(ngModel)]="customer.email" required autofocus fluid />
-            </div>
-
-            <div>
-                <label for="cellphone" class="block font-bold mb-3">Celular</label>
-                <input type="text" pInputText id="cellphone" [(ngModel)]="customer.cellphone" required autofocus fluid />
-            </div>
-
-            <div>
-                <label for="document-type" class="block font-bold mb-3">Tipo de documento</label>
-                <p-select [(ngModel)]="customer.documentType" inputId="document-type" [options]="documentTypes"
-                    optionLabel="label" optionValue="label" placeholder="Seleccione un tipo de documento" fluid />
-            </div>
-
-            <div>
-                <label for="document-number" class="block font-bold mb-3">Número de documento</label>
-                <input type="text" pInputText id="document-number" [(ngModel)]="customer.documentNumber" required autofocus fluid />
-                <small class="text-red-500" *ngIf="submitted && !customer.name">Name is required.</small>
-            </div>
-
-            <div>
-                <label for="observations" class="block font-bold mb-3">Observaciones</label>
-                <textarea id="observations" pTextarea [(ngModel)]="customer.observations" required rows="3" cols="20" fluid></textarea>
-            </div>
-        </div>
-    </ng-template>
-
-    <ng-template #footer>
-        <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialog()" />
-        <p-button label="Guardar" icon="pi pi-check" (click)="saveCustomer()" />
-    </ng-template>
-</p-dialog>
 
 <p-confirmdialog [style]="{ width: '450px' }" />

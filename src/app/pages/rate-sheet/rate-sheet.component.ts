@@ -21,6 +21,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Product, ProductService } from '../service/product.service';
 import { CreateCustomer } from '../../models/customers/request/CreateCustomer';
 import { Customer } from '../../models/customers/response/Customer';
+import { ServiceCategory } from '../../models/pricing/response/ServiceCategory';
+import { PricingService } from '../service/pricing.service';
 
 interface Column {
     field: string;
@@ -60,13 +62,13 @@ interface ExportColumn {
   styleUrl: './rate-sheet.component.scss'
 })
 export class RateSheetComponent {
-    productDialog: boolean = false;
+    pricingDialog: boolean = false;
 
-    ratePlans = signal<Customer[]>([]);
+    ratePlans = signal<ServiceCategory[]>([]);
 
-    customer!: CreateCustomer;
+    rateplan!: CreateCustomer;
 
-    selectedRatePlans!: Customer[] | null;
+    selectedRatePlans!: ServiceCategory[] | null;
 
     submitted: boolean = false;
 
@@ -80,6 +82,7 @@ export class RateSheetComponent {
 
     constructor(
         private productService: ProductService,
+        private pricingService: PricingService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService
     ) {}
@@ -93,14 +96,7 @@ export class RateSheetComponent {
     }
 
     loadData() {
-        // this.productService.getProducts().then((data) => {
-        //     this.customers.set(data);
-        // });
-
-        this.documentTypes = [
-            { label: 'DNI', value: 'DNI' },
-            { label: 'RUC', value: 'RUC' }
-        ];
+        this.ratePlans.set(this.pricingService.getDemoData());
 
         this.cols = [
             { field: 'code', header: 'Code', customExportHeader: 'Product Code' },
@@ -118,14 +114,14 @@ export class RateSheetComponent {
     }
 
     openNew() {
-        this.customer = {};
+        this.rateplan = {};
         this.submitted = false;
-        this.productDialog = true;
+        this.pricingDialog = true;
     }
 
     editProduct(product: Product) {
-        this.customer = { ...product };
-        this.productDialog = true;
+        this.rateplan = { ...product };
+        this.pricingDialog = true;
     }
 
     deleteSelectedRatePlans() {
@@ -146,11 +142,6 @@ export class RateSheetComponent {
         });
     }
 
-    hideDialog() {
-        this.productDialog = false;
-        this.submitted = false;
-    }
-
     deleteProduct(product: Product) {
         this.confirmationService.confirm({
             message: 'Are you sure you want to delete ' + product.name + '?',
@@ -158,7 +149,7 @@ export class RateSheetComponent {
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 // this.customers.set(this.customers().filter((val) => val.id !== product.id));
-                this.customer = {};
+                this.rateplan = {};
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
@@ -179,28 +170,6 @@ export class RateSheetComponent {
         // }
 
         return index;
-    }
-
-    createId(): string {
-        let id = '';
-        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (var i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
-    }
-
-    getSeverity(status: string) {
-        switch (status) {
-            case 'INSTOCK':
-                return 'success';
-            case 'LOWSTOCK':
-                return 'warn';
-            case 'OUTOFSTOCK':
-                return 'danger';
-            default:
-                return 'info';
-        }
     }
 
     saveCustomer() {
