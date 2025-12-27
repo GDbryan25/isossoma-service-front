@@ -7,12 +7,17 @@ import { Notfound } from './app/pages/notfound/notfound';
 import { CustomersComponent } from './app/pages/customers/customers.component';
 import { RateSheetComponent } from './app/pages/rate-sheet/rate-sheet.component';
 import { UsersComponent } from './app/pages/users/users.component';
+import { Login } from './app/pages/auth/login';
 
 export const appRoutes: Routes = [
     {
         path: '',
-        redirectTo: 'auth/login',
+        redirectTo: 'dashboard',
         pathMatch: 'full'
+    },
+    {
+        path: 'login',
+        component: Login
     },
     {
         path: '',
