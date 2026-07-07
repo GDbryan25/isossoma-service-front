@@ -29,13 +29,20 @@ export class AppMenu {
                 items: [
                     { label: 'Clientes', icon: 'pi pi-fw pi-building', routerLink: ['/gestion/clientes'] },
                     { label: 'Tarifarios', icon: 'pi pi-fw pi-money-bill', routerLink: ['/gestion/tarifarios'] },
-                    { label: 'Usuarios', icon: 'pi pi-fw pi-user', routerLink: ['/gestion/usuarios'] }
+                    { label: 'Proveedores', icon: 'pi pi-shopping-cart', routerLink: ['/gestion/proveedores'] }
+                ]
+            },
+            {
+                label: 'Seguridad',
+                items: [
+                    { label: 'Usuarios', icon: 'pi pi-fw pi-user', routerLink: ['/seguridad/usuarios'] },
+                    { label: 'Roles', icon: 'pi pi-shield', routerLink: ['/seguridad/roles'] }
                 ]
             },
             {
                 label: 'Operaciones',
                 items: [
-                    { label: 'Cotizaciones', icon: 'pi pi-fw pi-file-edit', routerLink: ['/cotizaciones'] }
+                    { label: 'Cotizaciones', icon: 'pi pi-fw pi-file-edit', routerLink: ['operaciones/cotizaciones'] }
                 ]
             },
             {
