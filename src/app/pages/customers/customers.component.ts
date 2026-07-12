@@ -216,7 +216,7 @@ export class CustomersComponent implements OnInit {
         const calls = this.selectedCustomers.map((c) => this.customerService.delete(c.id));
         forkJoin(calls).subscribe({
           next: () => {
-            this.loadData();
+            this.reloadCurrentPage();
             this.selectedCustomers = null;
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Clientes eliminados', life: 3000 });
           },
@@ -256,7 +256,7 @@ export class CustomersComponent implements OnInit {
       accept: () => {
         this.customerService.delete(customer.id).subscribe({
           next: () => {
-            this.customers.set(this.customers().filter((val) => val.id !== customer.id));
+            this.reloadCurrentPage();
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Cliente eliminado', life: 3000 });
           },
           error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar cliente' })

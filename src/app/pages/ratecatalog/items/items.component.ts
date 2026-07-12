@@ -274,7 +274,7 @@ export class ItemsComponent implements OnInit {
         const calls = this.selectedItems.map((item) => this.itemService.delete(item.id));
         forkJoin(calls).subscribe({
           next: () => {
-            this.loadData();
+            this.reloadCurrentPage();
             this.selectedItems = null;
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Items eliminados', life: 3000 });
           },
@@ -293,7 +293,7 @@ export class ItemsComponent implements OnInit {
       accept: () => {
         this.itemService.delete(item.id).subscribe({
           next: () => {
-            this.items.set(this.items().filter((it) => it.id !== item.id));
+            this.reloadCurrentPage();
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Item eliminado', life: 3000 });
           },
           error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar item' })

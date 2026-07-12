@@ -242,7 +242,7 @@ export class UsersComponent implements OnInit {
         const calls = this.selectedUsers.map((user) => this.userService.delete(user.id));
         forkJoin(calls).subscribe({
           next: () => {
-            this.loadData();
+            this.reloadCurrentPage();
             this.selectedUsers = null;
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuarios eliminados', life: 3000 });
           },
@@ -282,7 +282,7 @@ export class UsersComponent implements OnInit {
       accept: () => {
         this.userService.delete(user.id).subscribe({
           next: () => {
-            this.users.set(this.users().filter((item) => item.id !== user.id));
+            this.reloadCurrentPage();
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario eliminado', life: 3000 });
           },
           error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar usuario' })
