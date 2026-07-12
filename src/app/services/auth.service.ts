@@ -5,6 +5,7 @@ import { ApiResponse } from '../models/ApiResponse';
 import { AuthenticationResponse } from '../models/auth/authentication/AuthenticationResponse';
 import { LoginRequest } from '../models/auth/authentication/LoginRequest';
 import { AccessProfile } from '../models/auth/authentication/AccessProfile';
+import { environment } from '../../environments/environment';
 
 const ACCESS_TOKEN_KEY = 'auth.accessToken';
 const REFRESH_TOKEN_KEY = 'auth.refreshToken';
@@ -15,7 +16,7 @@ const ACCESS_PROFILE_KEY = 'auth.accessProfile';
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8080/api/v1/auth';
+  private readonly baseUrl = `${environment.apiBaseUrl}/api/v1/auth`;
 
   private readonly accessTokenSignal = signal<string | null>(localStorage.getItem(ACCESS_TOKEN_KEY));
   private readonly refreshTokenSignal = signal<string | null>(localStorage.getItem(REFRESH_TOKEN_KEY));

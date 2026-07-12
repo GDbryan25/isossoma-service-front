@@ -8,12 +8,13 @@ import { ItemResponse } from '../models/ratecatalog/item/response/ItemResponse';
 import { UpdateServiceItem } from '../models/ratecatalog/item/request/UpdateServiceItem';
 import { ItemWithSupplierResponse } from '../models/ratecatalog/item/response/ItemWithSupplierResponse';
 import { ServiceItemFilter } from '../models/ratecatalog/item/filters/ServiceItemFilter';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ItemService {
-  baseUrl: string = 'http://localhost:8080/api/v1/service-item';
+  baseUrl: string = `${environment.apiBaseUrl}/api/v1/service-item`;
 
   private readonly http = inject(HttpClient);
 

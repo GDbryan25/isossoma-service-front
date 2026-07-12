@@ -9,12 +9,13 @@ import { PageResponse } from '../models/PageResponse';
 import { SupplierFilter } from '../models/ratecatalog/supplier/filters/SupplierFilter';
 import { SupplierStatusFilter } from '../models/ratecatalog/supplier/filters/SupplierStatusFilter';
 import { SupplierListResponse } from '../models/ratecatalog/supplier/response/SupplierListResponse';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SupplierService {
-  baseUrl: string = 'http://localhost:8080/api/v1/supplier';
+  baseUrl: string = `${environment.apiBaseUrl}/api/v1/supplier`;
 
   private readonly http = inject(HttpClient);
 
