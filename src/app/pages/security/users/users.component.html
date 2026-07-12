@@ -114,7 +114,8 @@
       <div class="w-full">
         <label for="roles" class="block font-bold mb-3">Roles</label>
         <p-multiSelect id="roles" [options]="roles" optionLabel="name" optionValue="id"
-          [(ngModel)]="user.roleIds" defaultLabel="Selecciona roles" display="chip" class="w-full" />
+          [(ngModel)]="user.roleIds" defaultLabel="Selecciona roles" display="chip" class="w-full"
+          appendTo="body" [panelStyle]="{ minWidth: '24rem', maxHeight: '20rem' }" />
       </div>
     </div>
   </ng-template>

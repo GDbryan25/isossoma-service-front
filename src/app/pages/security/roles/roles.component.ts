@@ -230,7 +230,7 @@ export class RolesComponent implements OnInit {
         const calls = this.selectedRoles.map((role) => this.roleService.delete(role.id));
         forkJoin(calls).subscribe({
           next: () => {
-            this.loadData();
+            this.reloadCurrentPage();
             this.selectedRoles = null;
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Roles eliminados', life: 3000 });
           },
@@ -270,7 +270,7 @@ export class RolesComponent implements OnInit {
       accept: () => {
         this.roleService.delete(role.id).subscribe({
           next: () => {
-            this.roles.set(this.roles().filter((item) => item.id !== role.id));
+            this.reloadCurrentPage();
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Rol eliminado', life: 3000 });
           },
           error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar rol' })

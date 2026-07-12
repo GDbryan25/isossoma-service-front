@@ -198,7 +198,7 @@ export class SuppliersComponent implements OnInit {
         const calls = this.selectedSuppliers.map((supplier) => this.supplierService.delete(supplier.id));
         forkJoin(calls).subscribe({
           next: () => {
-            this.loadData();
+            this.reloadCurrentPage();
             this.selectedSuppliers = null;
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Proveedores eliminados', life: 3000 });
           },
@@ -238,7 +238,7 @@ export class SuppliersComponent implements OnInit {
       accept: () => {
         this.supplierService.delete(supplier.id).subscribe({
           next: () => {
-            this.suppliers.set(this.suppliers().filter((item) => item.id !== supplier.id));
+            this.reloadCurrentPage();
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Proveedor eliminado', life: 3000 });
           },
           error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar proveedor' })
