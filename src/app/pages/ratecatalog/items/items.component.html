@@ -1,0 +1,128 @@
+<p-toolbar styleClass="mb-6">
+  <ng-template #start>
+    <p-button *appCanDo="{ menuKey: 'GESTION', submenuKey: 'TARIFARIOS', actionKey: 'CREATE' }" label="Nuevo" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+    <p-button severity="secondary" label="Eliminar" icon="pi pi-trash" [outlined]="true" (onClick)="deleteSelectedItems()"
+      [disabled]="!canDeleteItem() || !selectedItems || !selectedItems.length" [pTooltip]="permissionTooltip(canDeleteItem())" tooltipPosition="top" />
+  </ng-template>
+
+  <ng-template #end>
+    <p-button label="Exportar" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+  </ng-template>
+</p-toolbar>
+
+<p-table #dt [value]="items()" [rows]="10" [columns]="cols" [paginator]="true" [totalRecords]="totalRecords" [lazy]="true" (onPage)="onPage($event)" [loading]="loading"
+  [tableStyle]="{ 'min-width': '75rem' }" [(selection)]="selectedItems" [rowHover]="true" dataKey="id"
+  currentPageReportTemplate="Mostrando {first} de {last} de {totalRecords} items" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,20,30]">
+
+  <ng-template #caption>
+    <div class="flex flex-wrap gap-4 items-end justify-between">
+      <div class="flex flex-1 min-w-[260px]">
+        <p-iconfield class="w-full">
+          <p-inputicon styleClass="pi pi-search" />
+          <input pInputText class="w-full" type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar por descripción..." />
+        </p-iconfield>
+      </div>
+      <div class="flex flex-wrap gap-4 items-end">
+        <div class="flex flex-col gap-2 min-w-[220px]">
+          <label for="serviceType" class="font-bold">Tipo de servicio</label>
+          <div class="flex gap-2 items-center">
+            <p-select
+              inputId="serviceType"
+              [(ngModel)]="selectedServiceTypeId"
+              [options]="serviceTypes()"
+              optionLabel="description"
+              optionValue="id"
+              placeholder="Seleccione tipo"
+              (onChange)="onServiceTypeChange()"
+              fluid
+            ></p-select>
+            <p-button icon="pi pi-times" class="p-button-text" (click)="clearServiceTypeFilter()" aria-label="Limpiar filtro tipo de servicio"></p-button>
+          </div>
+        </div>
+        <div class="flex flex-col gap-2 min-w-[220px]">
+          <label for="category" class="font-bold">Categoría</label>
+          <div class="flex gap-2 items-center">
+            <p-select
+              inputId="category"
+              [(ngModel)]="selectedCategoryId"
+              [options]="categories()"
+              optionLabel="description"
+              optionValue="categoryId"
+              placeholder="Seleccione categoría"
+              (onChange)="onCategoryChange()"
+              fluid
+            ></p-select>
+            <p-button icon="pi pi-times" class="p-button-text" (click)="clearCategoryFilter()" aria-label="Limpiar filtro categoría"></p-button>
+          </div>
+        </div>
+        <div class="flex flex-col gap-2 min-w-[220px]">
+          <label for="supplier" class="font-bold">Proveedor</label>
+          <div class="flex gap-2 items-center">
+            <p-select
+              inputId="supplier"
+              [(ngModel)]="selectedSupplierId"
+              [options]="suppliers()"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Seleccione proveedor"
+              (onChange)="onSupplierChange()"
+              fluid
+            ></p-select>
+            <p-button icon="pi pi-times" class="p-button-text" (click)="clearSupplierFilter()" aria-label="Limpiar filtro proveedor"></p-button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="flex flex-wrap gap-4 items-center mt-4 justify-between">
+        <div class="flex flex-wrap gap-4 items-center">
+          <p-radioButton name="status" [(ngModel)]="statusFilter" [value]="null" inputId="statusAll" (onClick)="onStatusChange()"></p-radioButton>
+          <label for="statusAll">Todos</label>
+          <p-radioButton name="status" [(ngModel)]="statusFilter" [value]="'ACTIVE'" inputId="statusActive" (onClick)="onStatusChange()"></p-radioButton>
+          <label for="statusActive">Activos</label>
+          <p-radioButton name="status" [(ngModel)]="statusFilter" [value]="'INACTIVE'" inputId="statusInactive" (onClick)="onStatusChange()"></p-radioButton>
+          <label for="statusInactive">Inactivos</label>
+        </div>
+        <p-button label="Limpiar filtros" icon="pi pi-filter-slash" severity="secondary" class="ml-auto" (onClick)="clearAllFilters()" />
+    </div>
+  </ng-template>
+
+  <ng-template #header>
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox />
+      </th>
+      <th style="min-width: 8rem">ID</th>
+      <th pSortableColumn="description" style="min-width: 20rem">Descripción<p-sortIcon field="description" /></th>
+      <th style="min-width: 10rem">Tipo</th>
+      <th style="min-width: 10rem">Categoría</th>
+      <th pSortableColumn="status" style="min-width: 10rem">Estado<p-sortIcon field="status" /></th>
+      <th style="min-width: 12rem"></th>
+    </tr>
+  </ng-template>
+
+  <ng-template #body let-item>
+    <tr>
+      <td style="width: 3rem">
+        <p-tableCheckbox [value]="item" />
+      </td>
+      <td style="min-width: 8rem">{{ item.id }}</td>
+      <td style="min-width: 20rem">{{ item.description }}</td>
+      <td style="min-width: 10rem">{{ item.parameterType }}</td>
+      <td style="min-width: 10rem">{{ item.categoryDescription }}</td>
+      <td>
+        <p-tag [value]="item.status" [severity]="item.status === 'ACTIVE' ? 'success' : 'danger'"></p-tag>
+      </td>
+      <td>
+        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editItem(item)"
+          [disabled]="!canUpdateItem()" [pTooltip]="permissionTooltip(canUpdateItem())" tooltipPosition="top" />
+        <p-button *ngIf="item.status !== 'INACTIVE'" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteItem(item)"
+          [disabled]="!canDeleteItem()" [pTooltip]="permissionTooltip(canDeleteItem())" tooltipPosition="top" />
+        <p-button *ngIf="item.status === 'INACTIVE'" icon="pi pi-refresh" severity="success" [rounded]="true" [outlined]="true" (click)="reactivateItem(item)"
+          [disabled]="!canReactivateItem()" [pTooltip]="permissionTooltip(canReactivateItem())" tooltipPosition="top" />
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-confirmdialog [style]="{ width: '450px' }" />

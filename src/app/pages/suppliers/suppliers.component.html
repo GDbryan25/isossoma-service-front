@@ -1,0 +1,102 @@
+<p-toolbar styleClass="mb-6">
+  <ng-template #start>
+    <p-button label="Nuevo" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" [disabled]="!canCreateSupplier()" [pTooltip]="permissionTooltip(canCreateSupplier())" tooltipPosition="top" />
+    <p-button severity="secondary" label="Eliminar" icon="pi pi-trash" outlined (onClick)="deleteSelectedSuppliers()"
+      [disabled]="!canDeleteSupplier() || !selectedSuppliers || !selectedSuppliers.length" [pTooltip]="permissionTooltip(canDeleteSupplier())" tooltipPosition="top" />
+  </ng-template>
+
+  <ng-template #end>
+    <p-button label="Exportar" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+  </ng-template>
+</p-toolbar>
+
+<p-table #dt [value]="suppliers()" [rows]="10" [columns]="cols" [paginator]="true" [totalRecords]="totalRecords"
+  [lazy]="true" (onPage)="onPage($event)" [loading]="loading" [tableStyle]="{ 'min-width': '75rem' }"
+  [(selection)]="selectedSuppliers" [rowHover]="true" dataKey="id"
+  currentPageReportTemplate="Mostrando {first} de {last} de {totalRecords} proveedores" [showCurrentPageReport]="true"
+  [rowsPerPageOptions]="[10, 20, 30]">
+  <ng-template #caption>
+    <div class="flex items-center justify-between flex-wrap gap-4">
+      <h5 class="m-0">Mantenimiento de proveedores</h5>
+      <div class="flex items-center gap-4">
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search" />
+          <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar por nombre..." />
+        </p-iconfield>
+        <div class="flex items-center gap-2">
+          <p-radioButton name="status" [(ngModel)]="statusFilter" [value]="null" inputId="statusAll" (onClick)="onStatusChange()"></p-radioButton>
+          <label for="statusAll">Todos</label>
+          <p-radioButton name="status" [(ngModel)]="statusFilter" [value]="'ACTIVE'" inputId="statusActive" (onClick)="onStatusChange()"></p-radioButton>
+          <label for="statusActive">Activos</label>
+          <p-radioButton name="status" [(ngModel)]="statusFilter" [value]="'INACTIVE'" inputId="statusInactive" (onClick)="onStatusChange()"></p-radioButton>
+          <label for="statusInactive">Inactivos</label>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox />
+      </th>
+      <th style="min-width: 8rem">ID</th>
+      <th pSortableColumn="name" style="min-width: 16rem">
+        Nombre
+        <p-sortIcon field="name" />
+      </th>
+      <th style="min-width: 16rem">Nota</th>
+      <th pSortableColumn="status" style="min-width: 10rem">
+        Estado
+        <p-sortIcon field="status" />
+      </th>
+      <th style="min-width: 10rem"></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-supplier>
+    <tr>
+      <td style="width: 3rem">
+        <p-tableCheckbox [value]="supplier" />
+      </td>
+      <td style="min-width: 8rem">{{ supplier.id }}</td>
+      <td style="min-width: 16rem">{{ supplier.name }}</td>
+      <td>{{ supplier.note }}</td>
+      <td>
+        <p-tag [value]="supplier.status" [severity]="supplier.status === 'ACTIVE' ? 'success' : 'danger'"></p-tag>
+      </td>
+      <td>
+        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editSupplier(supplier)"
+          [disabled]="!canUpdateSupplier()" [pTooltip]="permissionTooltip(canUpdateSupplier())" tooltipPosition="top" />
+        <p-button *ngIf="supplier.status !== 'INACTIVE'" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteSupplier(supplier)"
+          [disabled]="!canDeleteSupplier()" [pTooltip]="permissionTooltip(canDeleteSupplier())" tooltipPosition="top" />
+        <p-button *ngIf="supplier.status === 'INACTIVE'" icon="pi pi-refresh" severity="success" [rounded]="true" [outlined]="true" (click)="reactivateSupplier(supplier)"
+          [disabled]="!canReactivateSupplier()" [pTooltip]="permissionTooltip(canReactivateSupplier())" tooltipPosition="top" />
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="supplierDialog" [style]="{ width: '450px' }" header="Detalles del proveedor" [modal]="true">
+  <ng-template #content>
+    <div class="flex flex-col justify-content-center align-items-center gap-6">
+      <div class="w-full">
+        <label for="name" class="block font-bold mb-3">Nombre</label>
+        <input type="text" pInputText id="name" [(ngModel)]="supplier.name" required autofocus class="w-full" />
+        <small class="text-red-500" *ngIf="submitted && !supplier.name">El nombre es requerido.</small>
+      </div>
+
+      <div class="w-full">
+        <label for="note" class="block font-bold mb-3">Nota</label>
+        <input type="text" pInputText id="note" [(ngModel)]="supplier.note" class="w-full" />
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #footer>
+    <div class="flex justify-content-center gap-3 w-full">
+      <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialog()" />
+      <p-button label="Guardar" icon="pi pi-check" (click)="saveSupplier()" />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-confirmdialog [style]="{ width: '450px' }" />

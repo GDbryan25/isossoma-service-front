@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'app-notfound',
@@ -50,10 +51,24 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
                                 <span class="text-surface-600 dark:text-surface-200 lg:text-xl">Accumsan in nisl nisi scelerisque</span>
                             </span>
                         </a>
-                        <p-button label="Volver al inicio" routerLink="/" />
+                        <p-button label="Volver al inicio" (onClick)="goToHome()" />
                     </div>
                 </div>
             </div>
         </div>`
 })
-export class Notfound {}
+export class Notfound {
+    constructor(
+        private authService: AuthService,
+        private router: Router
+    ) {}
+
+    goToHome(): void {
+        if (this.authService.isAuthenticated()) {
+            this.router.navigate(['/inicio/dashboard']);
+            return;
+        }
+
+        this.router.navigate(['/login']);
+    }
+}

@@ -1,0 +1,207 @@
+<p-toolbar styleClass="mb-6">
+	<ng-template #start>
+		<div class="title-block">
+			<h5 class="m-0">Registro de Item - Proveedor</h5>
+			<span class="subtitle">Completa los datos generales y luego agrega los detalles.</span>
+		</div>
+	</ng-template>
+</p-toolbar>
+
+<p-toast></p-toast>
+
+
+<section class="general-block mb-6">
+	<div class="general-panel">
+		<p-toolbar styleClass="general-toolbar">
+			<ng-template #start>
+				<div class="section-header">
+					<span class="section-title">Datos generales</span>
+					<span class="section-subtitle">Informacion base del item</span>
+				</div>
+			</ng-template>
+		</p-toolbar>
+
+		<div class="general-card p-4">
+		<div class="general-form">
+			<div class="general-row general-row-top">
+				<div class="field-group field-card">
+				<label for="serviceType" class="font-bold">Tipo de servicio</label>
+				<p-select
+					inputId="serviceType"
+					[(ngModel)]="selectedServiceTypeId"
+					[options]="serviceTypes()"
+					optionLabel="description"
+					optionValue="id"
+					placeholder="Seleccione tipo de servicio"
+					(onChange)="onServiceTypeChange()"
+					fluid
+				></p-select>
+				</div>
+
+				<div class="field-group field-card">
+				<label for="category" class="font-bold">Categoría</label>
+				<p-select
+					inputId="category"
+					[(ngModel)]="selectedCategoryId"
+					[options]="categories()"
+					optionLabel="description"
+					optionValue="categoryId"
+					placeholder="Seleccione categoría"
+					[disabled]="selectedServiceTypeId === null"
+					fluid
+				></p-select>
+				<small *ngIf="selectedServiceTypeId === null" class="field-help">Selecciona primero un tipo de servicio.</small>
+				</div>
+
+				<div class="field-group field-card">
+				<label for="parameterType" class="font-bold">Tipo de parámetro</label>
+				<p-select
+					inputId="parameterType"
+					[(ngModel)]="selectedParameterType"
+					[options]="parameterTypeOptions"
+					optionLabel="label"
+					optionValue="value"
+					placeholder="Seleccione tipo de parámetro"
+					fluid
+				></p-select>
+				</div>
+			</div>
+
+			<div class="general-row general-row-full">
+				<div class="field-group field-card">
+				<label for="description" class="font-bold">Descripción</label>
+				<input id="description" type="text" pInputText [(ngModel)]="description" class="w-full" placeholder="Escribe una descripción" />
+				</div>
+			</div>
+
+			<div class="general-row general-row-full">
+				<div class="field-group field-card">
+				<label for="additionalNote" class="font-bold">Nota adicional</label>
+				<textarea
+					id="additionalNote"
+					pInputTextarea
+					rows="3"
+					[(ngModel)]="additionalNote"
+					class="w-full"
+					placeholder="Agrega una nota adicional"
+				></textarea>
+				</div>
+			</div>
+		</div>
+		</div>
+	</div>
+</section>
+
+<div class="details-section mb-4">
+	<div class="section-header mb-3">
+		<span class="section-title">Detalles del proveedor</span>
+	</div>
+
+	<p-table [value]="detailRows" [tableStyle]="{ 'min-width': '75rem' }" class="detail-table" [rowHover]="true">
+	<ng-template #header>
+		<tr>
+			<th style="min-width: 7rem">ID</th>
+			<th style="min-width: 14rem">Proveedor</th>
+			<th style="min-width: 14rem">Metodología</th>
+			<th style="min-width: 12rem">Acreditación</th>
+			<th style="min-width: 10rem">Precio</th>
+			<th style="min-width: 12rem">Lugar</th>
+			<th style="min-width: 9rem">Estado</th>
+			<th style="min-width: 10rem"></th>
+		</tr>
+	</ng-template>
+
+	<ng-template #body let-detail let-rowIndex="rowIndex">
+		<tr>
+			<td>{{ detail.id ?? '-' }}</td>
+			<td>{{ detail.supplierDescription }}</td>
+			<td>{{ detail.methodology }}</td>
+			<td>{{ detail.accreditation }}</td>
+			<td>{{ detail.price !== null ? (detail.price | currency: 'USD' : 'symbol' : '1.2-2') : '-' }}</td>
+			<td>{{ detail.location }}</td>
+			<td>
+				<p-tag [value]="detail.status" [severity]="detail.status === 'ACTIVE' ? 'success' : 'danger'"></p-tag>
+			</td>
+			<td>
+				<div class="detail-actions">
+					<p-button icon="pi pi-pencil" [rounded]="true" [outlined]="true" (onClick)="onEditDetail(rowIndex)"
+						[disabled]="!canUpdateDetail()" [pTooltip]="permissionTooltip(canUpdateDetail())" tooltipPosition="top"></p-button>
+					<p-button *ngIf="detail.status !== 'INACTIVE'" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (onClick)="onDeleteDetail(rowIndex)"
+						[disabled]="!canDeleteDetail()" [pTooltip]="permissionTooltip(canDeleteDetail())" tooltipPosition="top"></p-button>
+					<p-button *ngIf="detail.status === 'INACTIVE'" icon="pi pi-refresh" severity="success" [rounded]="true" [outlined]="true" (onClick)="onReactivateDetail(rowIndex)"
+						[disabled]="!canReactivateDetail()" [pTooltip]="permissionTooltip(canReactivateDetail())" tooltipPosition="top"></p-button>
+				</div>
+			</td>
+		</tr>
+	</ng-template>
+
+	<ng-template #emptymessage>
+		<tr>
+			<td colspan="8" class="text-center py-4">Aun no hay detalles. Presiona Anadir para iniciar.</td>
+		</tr>
+	</ng-template>
+	</p-table>
+</div>
+
+<div class="actions-row">
+	<p-button label="Guardar" icon="pi pi-check" (onClick)="onSave()" class="action-btn"
+		[disabled]="!canSaveItem()" [pTooltip]="permissionTooltip(canSaveItem())" tooltipPosition="top"></p-button>
+	<p-button label="Anadir" icon="pi pi-plus" severity="secondary" (onClick)="onAddDetail()" class="action-btn"
+		[disabled]="!canCreateDetail()" [pTooltip]="permissionTooltip(canCreateDetail())" tooltipPosition="top"></p-button>
+	<p-button label="Cancelar" icon="pi pi-times" [outlined]="true" (onClick)="onCancel()" class="action-btn"></p-button>
+</div>
+
+<p-dialog
+	header="Agregar detalle de proveedor"
+	[(visible)]="detailDialogVisible"
+	[modal]="true"
+	[draggable]="false"
+	[resizable]="false"
+	[style]="{ width: '42rem' }"
+>
+	<ng-template #content>
+		<div class="dialog-form">
+			<div class="field-group">
+				<label for="detailSupplier" class="font-bold">Proveedor</label>
+				<p-select
+					inputId="detailSupplier"
+					[(ngModel)]="detailForm.supplierId"
+					[options]="suppliers()"
+					optionLabel="name"
+					optionValue="id"
+					placeholder="Seleccione proveedor"
+					fluid
+				></p-select>
+			</div>
+
+			<div class="dialog-grid">
+				<div class="field-group">
+					<label for="methodology" class="font-bold">Metodologia</label>
+					<input id="methodology" type="text" pInputText [(ngModel)]="detailForm.methodology" class="w-full" placeholder="Ingrese metodologia" />
+				</div>
+
+				<div class="field-group">
+					<label for="accreditation" class="font-bold">Acreditacion</label>
+					<input id="accreditation" type="text" pInputText [(ngModel)]="detailForm.accreditation" class="w-full" placeholder="Ingrese acreditacion" />
+				</div>
+
+				<div class="field-group">
+					<label for="price" class="font-bold">Precio</label>
+					<input id="price" type="number" pInputText [(ngModel)]="detailForm.price" class="w-full" placeholder="Ingrese precio" />
+				</div>
+
+				<div class="field-group">
+					<label for="location" class="font-bold">Lugar</label>
+					<input id="location" type="text" pInputText [(ngModel)]="detailForm.location" class="w-full" placeholder="Ingrese lugar" />
+				</div>
+			</div>
+		</div>
+	</ng-template>
+
+	<ng-template #footer>
+		<div class="dialog-actions">
+			<p-button label="Cancelar" icon="pi pi-times" [outlined]="true" (onClick)="closeDetailDialog()"></p-button>
+			<p-button label="Agregar" icon="pi pi-check" (onClick)="saveDetailFromDialog()"></p-button>
+		</div>
+	</ng-template>
+</p-dialog>

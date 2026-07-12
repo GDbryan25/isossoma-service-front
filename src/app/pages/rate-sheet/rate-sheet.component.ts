@@ -19,7 +19,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Product, ProductService } from '../service/product.service';
-import { CreateCustomer } from '../../models/customers/request/CreateCustomer';
+import { SaveCustomer } from '../../models/customers/request/SaveCustomer';
 import { Customer } from '../../models/customers/response/Customer';
 import { ServiceCategory } from '../../models/pricing/response/ServiceCategory';
 import { PricingService } from '../service/pricing.service';
@@ -66,7 +66,7 @@ export class RateSheetComponent {
 
     ratePlans = signal<ServiceCategory[]>([]);
 
-    rateplan!: CreateCustomer;
+    rateplan!: SaveCustomer;
 
     selectedRatePlans!: ServiceCategory[] | null;
 

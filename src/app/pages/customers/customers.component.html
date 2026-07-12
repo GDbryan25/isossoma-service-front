@@ -1,26 +1,40 @@
 <p-toolbar styleClass="mb-6">
     <ng-template #start>
-        <p-button label="Nuevo" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        <p-button *appCanDo="{ menuKey: 'GESTION', submenuKey: 'CLIENTES', actionKey: 'CREATE' }" label="Nuevo" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
         <p-button severity="secondary" label="Eliminar" icon="pi pi-trash" outlined (onClick)="deleteSelectedCustomers()"
-            [disabled]="!selectedCustomers || !selectedCustomers.length" />
+            [disabled]="!canDeleteCustomer() || !selectedCustomers || !selectedCustomers.length" [pTooltip]="permissionTooltip(canDeleteCustomer())" tooltipPosition="top" />
     </ng-template>
 
     <ng-template #end>
         <p-button label="Exportar" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
     </ng-template>
 </p-toolbar>
-<p-table #dt [value]="customers()" [rows]="10" [columns]="cols" [paginator]="true"
-    [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']"
+<p-table #dt [value]="customers()" [rows]="10" [columns]="cols" [paginator]="true" [totalRecords]="totalRecords"
+    [lazy]="true" (onPage)="onPage($event)"
+    [globalFilterFields]="['name', 'country.name', 'representative.name', 'status']" [loading]="loading"
     [tableStyle]="{ 'min-width': '75rem' }" [(selection)]="selectedCustomers" [rowHover]="true" dataKey="id"
     currentPageReportTemplate="Mostrando {first} de {last} de {totalRecords} clientes" [showCurrentPageReport]="true"
     [rowsPerPageOptions]="[10, 20, 30]">
     <ng-template #caption>
         <div class="flex items-center justify-between">
             <h5 class="m-0">Mantenimiento de clientes</h5>
-            <p-iconfield>
-                <p-inputicon styleClass="pi pi-search" />
-                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..." />
-            </p-iconfield>
+                <div class="flex items-center gap-4">
+                    <p-iconfield>
+                        <p-inputicon styleClass="pi pi-search" />
+                        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar por nombre..." />
+                    </p-iconfield>
+
+                    <div class="flex items-center gap-2">
+                        <p-radioButton name="status" [(ngModel)]="statusFilter" [value]="null" inputId="statusAll" (onClick)="onStatusChange()"></p-radioButton>
+                        <label for="statusAll">Todos</label>
+
+                        <p-radioButton name="status" [(ngModel)]="statusFilter" [value]="'ACTIVE'" inputId="statusActive" (onClick)="onStatusChange()"></p-radioButton>
+                        <label for="statusActive">Activos</label>
+
+                        <p-radioButton name="status" [(ngModel)]="statusFilter" [value]="'INACTIVE'" inputId="statusInactive" (onClick)="onStatusChange()"></p-radioButton>
+                        <label for="statusInactive">Inactivos</label>
+                    </div>
+                </div>
         </div>
     </ng-template>
     <ng-template #header>
@@ -45,6 +59,10 @@
                 Número de documento
                 <p-sortIcon field="rating" />
             </th>
+            <th pSortableColumn="customerStatus" style="min-width: 10rem">
+                Estado
+                <p-sortIcon field="customerStatus" />
+            </th>
             <th style="min-width: 12rem"></th>
         </tr>
     </ng-template>
@@ -59,10 +77,15 @@
             <td>{{ customer.documentType }}</td>
             <td>{{ customer.documentNumber }}</td>
             <td>
+                <p-tag [value]="customer.customerStatus" [severity]="customer.customerStatus === 'ACTIVE' ? 'success' : 'danger'"></p-tag>
+            </td>
+            <td>
                 <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"
-                    (click)="editProduct(customer)" />
-                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
-                    (click)="deleteProduct(customer)" />
+                    (click)="editProduct(customer)" [disabled]="!canUpdateCustomer()" [pTooltip]="permissionTooltip(canUpdateCustomer())" tooltipPosition="top" />
+                <p-button *ngIf="customer.customerStatus !== 'INACTIVE'" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+                    (click)="deleteProduct(customer)" [disabled]="!canDeleteCustomer()" [pTooltip]="permissionTooltip(canDeleteCustomer())" tooltipPosition="top" />
+                <p-button *ngIf="customer.customerStatus === 'INACTIVE'" icon="pi pi-refresh" severity="success" [rounded]="true" [outlined]="true"
+                    (click)="reactivateCustomer(customer)" [disabled]="!canReactivateCustomer()" [pTooltip]="permissionTooltip(canReactivateCustomer())" tooltipPosition="top" />
             </td>
         </tr>
     </ng-template>
@@ -86,7 +109,7 @@
 
             <div>
                 <label for="contact" class="block font-bold mb-3">Contacto</label>
-                <input type="text" pInputText id="contact" [(ngModel)]="customer.contact" required autofocus fluid />
+                <input type="text" pInputText id="contact" [(ngModel)]="customer.contactName" required autofocus fluid />
             </div>
 
             <div>

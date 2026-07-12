@@ -1,0 +1,109 @@
+<p-toolbar styleClass="mb-6">
+  <ng-template #start>
+    <p-button *appCanDo="{ menuKey: 'SEGURIDAD', submenuKey: 'ROLES', actionKey: 'CREATE' }" label="Nuevo" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+    <p-button severity="secondary" label="Eliminar" icon="pi pi-trash" outlined (onClick)="deleteSelectedRoles()"
+      [disabled]="!canDeleteRole() || !selectedRoles || !selectedRoles.length" [pTooltip]="permissionTooltip(canDeleteRole())" tooltipPosition="top" />
+  </ng-template>
+
+  <ng-template #end>
+    <p-button label="Exportar" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+  </ng-template>
+</p-toolbar>
+
+<p-table #dt [value]="roles()" [rows]="10" [columns]="cols" [paginator]="true" [totalRecords]="totalRecords"
+  [lazy]="true" (onPage)="onPage($event)" [loading]="loading" [tableStyle]="{ 'min-width': '75rem' }"
+  [(selection)]="selectedRoles" [rowHover]="true" dataKey="id"
+  currentPageReportTemplate="Mostrando {first} de {last} de {totalRecords} roles" [showCurrentPageReport]="true"
+  [rowsPerPageOptions]="[10, 20, 30]">
+  <ng-template #caption>
+    <div class="flex items-center justify-between flex-wrap gap-4">
+      <h5 class="m-0">Mantenimiento de roles</h5>
+      <div class="flex items-center gap-4">
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search" />
+          <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar por nombre..." />
+        </p-iconfield>
+        <div class="flex items-center gap-2">
+          <p-radioButton name="status" [(ngModel)]="statusFilter" [value]="null" inputId="statusAll" (onClick)="onStatusChange()"></p-radioButton>
+          <label for="statusAll">Todos</label>
+          <p-radioButton name="status" [(ngModel)]="statusFilter" [value]="'ACTIVE'" inputId="statusActive" (onClick)="onStatusChange()"></p-radioButton>
+          <label for="statusActive">Activos</label>
+          <p-radioButton name="status" [(ngModel)]="statusFilter" [value]="'INACTIVE'" inputId="statusInactive" (onClick)="onStatusChange()"></p-radioButton>
+          <label for="statusInactive">Inactivos</label>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #header>
+    <tr>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox />
+      </th>
+      <th style="min-width: 8rem">ID</th>
+      <th pSortableColumn="name" style="min-width: 16rem">
+        Nombre
+        <p-sortIcon field="name" />
+      </th>
+      <th style="min-width: 16rem">Descripción</th>
+      <th pSortableColumn="status" style="min-width: 10rem">
+        Estado
+        <p-sortIcon field="status" />
+      </th>
+      <th style="min-width: 12rem"></th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-role>
+    <tr>
+      <td style="width: 3rem">
+        <p-tableCheckbox [value]="role" />
+      </td>
+      <td style="min-width: 8rem">{{ role.id }}</td>
+      <td style="min-width: 16rem">{{ role.name }}</td>
+      <td>{{ role.description }}</td>
+      <td>
+        <p-tag [value]="role.status" [severity]="role.status === 'ACTIVE' ? 'success' : 'danger'"></p-tag>
+      </td>
+      <td>
+        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editRole(role)"
+          [disabled]="!canUpdateRole()" [pTooltip]="permissionTooltip(canUpdateRole())" tooltipPosition="top" />
+        <p-button *ngIf="role.status !== 'INACTIVE'" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteRole(role)"
+          [disabled]="!canDeleteRole()" [pTooltip]="permissionTooltip(canDeleteRole())" tooltipPosition="top" />
+        <p-button *ngIf="role.status === 'INACTIVE'" icon="pi pi-refresh" severity="success" [rounded]="true" [outlined]="true" (click)="reactivateRole(role)"
+          [disabled]="!canReactivateRole()" [pTooltip]="permissionTooltip(canReactivateRole())" tooltipPosition="top" />
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog [(visible)]="roleDialog" [style]="{ width: '550px' }" header="Detalle del rol" [modal]="true">
+  <ng-template #content>
+    <div class="flex flex-col justify-content-center align-items-center gap-6">
+      <div class="w-full">
+        <label for="name" class="block font-bold mb-3">Nombre</label>
+        <input type="text" pInputText id="name" [(ngModel)]="role.name" required autofocus class="w-full" />
+        <small class="text-red-500" *ngIf="submitted && !role.name">El nombre es requerido.</small>
+      </div>
+
+      <div class="w-full">
+        <label for="description" class="block font-bold mb-3">Descripción</label>
+        <input type="text" pInputText id="description" [(ngModel)]="role.description" class="w-full" />
+      </div>
+
+      <div class="w-full">
+        <label for="permissions" class="block font-bold mb-3">Permisos</label>
+        <p-multiSelect id="permissions" [options]="permissions" optionLabel="description" optionValue="id"
+          [(ngModel)]="role.permissionIds" defaultLabel="Selecciona permisos" display="chip" class="w-full"
+          appendTo="body" [panelStyle]="{ minWidth: '24rem', maxHeight: '20rem' }" filter="true" />
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #footer>
+    <div class="flex justify-content-center gap-3 w-full">
+      <p-button label="Cancelar" icon="pi pi-times" text (click)="hideDialog()" />
+      <p-button label="Guardar" icon="pi pi-check" (click)="saveRole()" />
+    </div>
+  </ng-template>
+</p-dialog>
+
+<p-confirmdialog [style]="{ width: '450px' }" />
