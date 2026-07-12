@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/ApiResponse';
-import { ServiceTypeResponse } from '../models/raatecatalog/service-type/ServiceTypeResponse';
+import { ServiceTypeResponse } from '../models/ratecatalog/service-type/ServiceTypeResponse';
 
 @Injectable({
   providedIn: 'root'

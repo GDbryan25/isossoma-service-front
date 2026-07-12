@@ -3,11 +3,11 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/ApiResponse';
 import { PageResponse } from '../models/PageResponse';
-import { CreateServiceItem } from '../models/raatecatalog/item/request/CreateServiceItem';
-import { ItemResponse } from '../models/raatecatalog/item/response/ItemResponse';
-import { UpdateServiceItem } from '../models/raatecatalog/item/request/UpdateServiceItem';
-import { ItemWithSupplierResponse } from '../models/raatecatalog/item/response/ItemWithSupplierResponse';
-import { ServiceItemFilter } from '../models/raatecatalog/item/filters/ServiceItemFilter';
+import { CreateServiceItem } from '../models/ratecatalog/item/request/CreateServiceItem';
+import { ItemResponse } from '../models/ratecatalog/item/response/ItemResponse';
+import { UpdateServiceItem } from '../models/ratecatalog/item/request/UpdateServiceItem';
+import { ItemWithSupplierResponse } from '../models/ratecatalog/item/response/ItemWithSupplierResponse';
+import { ServiceItemFilter } from '../models/ratecatalog/item/filters/ServiceItemFilter';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +23,10 @@ export class ItemService {
 
   update(id: number, request: UpdateServiceItem): Observable<ApiResponse<ItemResponse>> {
     return this.http.put<ApiResponse<ItemResponse>>(`${this.baseUrl}/${id}`, request);
+  }
+
+  reactivate(id: number): Observable<ApiResponse<ItemResponse>> {
+    return this.http.patch<ApiResponse<ItemResponse>>(`${this.baseUrl}/${id}/reactivate`, {});
   }
 
   delete(id: number): Observable<ApiResponse<null>> {

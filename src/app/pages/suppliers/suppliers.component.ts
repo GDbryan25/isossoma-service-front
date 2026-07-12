@@ -16,15 +16,17 @@ import { TagModule } from 'primeng/tag';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
+import { TooltipModule } from 'primeng/tooltip';
 import { forkJoin } from 'rxjs';
 
-import { CreateSupplierRequest } from '../../models/raatecatalog/supplier/request/CreateSupplierRequest';
-import { UpdateSupplierRequest } from '../../models/raatecatalog/supplier/request/UpdateSupplierRequest';
-import { SupplierResponse } from '../../models/raatecatalog/supplier/response/SupplierResponse';
+import { CreateSupplierRequest } from '../../models/ratecatalog/supplier/request/CreateSupplierRequest';
+import { UpdateSupplierRequest } from '../../models/ratecatalog/supplier/request/UpdateSupplierRequest';
+import { SupplierResponse } from '../../models/ratecatalog/supplier/response/SupplierResponse';
 import { SupplierService } from '../../services/supplier.service';
-import { SupplierFilter } from '../../models/raatecatalog/supplier/filters/SupplierFilter';
+import { SupplierFilter } from '../../models/ratecatalog/supplier/filters/SupplierFilter';
 import { PageResponse } from '../../models/PageResponse';
 import { ApiResponse } from '../../models/ApiResponse';
+import { AuthorizationService } from '../../services/authorization.service';
 
 interface Column {
   field: string;
@@ -59,7 +61,8 @@ interface SaveSupplier {
     TagModule,
     ConfirmDialogModule,
     InputIconModule,
-    IconFieldModule
+    IconFieldModule,
+    TooltipModule
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './suppliers.component.html',
@@ -82,9 +85,30 @@ export class SuppliersComponent implements OnInit {
 
   constructor(
     private supplierService: SupplierService,
+    private authorizationService: AuthorizationService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService
   ) {}
+
+  canCreateSupplier(): boolean {
+    return this.authorizationService.canDo('GESTION', 'PROVEEDORES', 'CREATE');
+  }
+
+  canUpdateSupplier(): boolean {
+    return this.authorizationService.canDo('GESTION', 'PROVEEDORES', 'UPDATE');
+  }
+
+  canDeleteSupplier(): boolean {
+    return this.authorizationService.canDo('GESTION', 'PROVEEDORES', 'DELETE');
+  }
+
+  canReactivateSupplier(): boolean {
+    return this.authorizationService.canDo('GESTION', 'PROVEEDORES', 'REACTIVATE');
+  }
+
+  permissionTooltip(allowed: boolean): string {
+    return allowed ? '' : 'No tienes permisos';
+  }
 
   exportCSV() {
     this.dt.exportCSV();
@@ -189,6 +213,23 @@ export class SuppliersComponent implements OnInit {
     this.submitted = false;
   }
 
+  reactivateSupplier(supplier: SupplierResponse) {
+    this.confirmationService.confirm({
+      message: '¿Está seguro de reactivar ' + supplier.name + '?',
+      header: 'Confirmar',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.supplierService.reactivate(supplier.id).subscribe({
+          next: () => {
+            this.reloadCurrentPage();
+            this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Proveedor reactivado', life: 3000 });
+          },
+          error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo reactivar proveedor' })
+        });
+      }
+    });
+  }
+
   deleteSupplier(supplier: SupplierResponse) {
     this.confirmationService.confirm({
       message: '¿Está seguro de eliminar ' + supplier.name + '?',
@@ -240,5 +281,11 @@ export class SuppliersComponent implements OnInit {
         error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo crear proveedor' })
       });
     }
+  }
+
+  private reloadCurrentPage() {
+    const size = this.dt?.rows ?? 10;
+    const page = Math.floor((this.dt?.first ?? 0) / size);
+    this.loadData(page, size, this.nameFilter, this.statusFilter);
   }
 }

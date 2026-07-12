@@ -2,12 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ApiResponse } from '../models/ApiResponse';
 import { Observable } from 'rxjs';
-import { ItemSupplierResponse } from '../models/raatecatalog/item-supplier/response/ItemSupplierResponse';
+import { ItemSupplierResponse } from '../models/ratecatalog/item-supplier/response/ItemSupplierResponse';
 import { PageResponse } from '../models/PageResponse';
-import { CreateItemSupplier } from '../models/raatecatalog/item-supplier/request/CreateItemSupplier';
-import { UpdateItemSupplier } from '../models/raatecatalog/item-supplier/request/UpdateItemSupplier';
-import { ItemSupplierDetailResponse } from '../models/raatecatalog/item-supplier/response/ItemSupplierDetailResponse';
-import { ItemSupplierPageableFilter } from '../models/raatecatalog/item-supplier/filters/ItemSupplierPageableFilter';
+import { CreateItemSupplier } from '../models/ratecatalog/item-supplier/request/CreateItemSupplier';
+import { UpdateItemSupplier } from '../models/ratecatalog/item-supplier/request/UpdateItemSupplier';
+import { ItemSupplierDetailResponse } from '../models/ratecatalog/item-supplier/response/ItemSupplierDetailResponse';
+import { ItemSupplierPageableFilter } from '../models/ratecatalog/item-supplier/filters/ItemSupplierPageableFilter';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +27,10 @@ export class ItemSupplierService {
 
   delete(id: number): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(`${this.baseUrl}/${id}`);
+  }
+
+  reactivate(id: number): Observable<ApiResponse<ItemSupplierResponse>> {
+    return this.http.patch<ApiResponse<ItemSupplierResponse>>(`${this.baseUrl}/${id}/reactivate`, {});
   }
 
   findById(id: number): Observable<ApiResponse<ItemSupplierDetailResponse>> {

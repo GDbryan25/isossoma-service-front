@@ -18,6 +18,7 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { TooltipModule } from 'primeng/tooltip';
 import { forkJoin } from 'rxjs';
 
 import { SaveCustomer } from '../../models/customers/request/SaveCustomer';
@@ -26,6 +27,8 @@ import { ApiResponse } from '../../models/ApiResponse';
 import { CustomerService } from '../../services/customer.service';
 import { CustomerFilter } from '../../models/customers/filters/CustomerFilter';
 import { PageResponse } from '../../models/PageResponse';
+import { AuthorizationService } from '../../services/authorization.service';
+import { CanDirective } from '../../shared/directives/can.directive';
 
 interface Column {
   field: string;
@@ -58,7 +61,9 @@ interface ExportColumn {
     TagModule,
     InputIconModule,
     IconFieldModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    TooltipModule,
+    CanDirective
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './customers.component.html',
@@ -91,9 +96,30 @@ export class CustomersComponent implements OnInit {
 
   constructor(
     private customerService: CustomerService,
+    private authorizationService: AuthorizationService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService
   ) {}
+
+  canCreateCustomer(): boolean {
+    return this.authorizationService.canDo('GESTION', 'CLIENTES', 'CREATE');
+  }
+
+  canUpdateCustomer(): boolean {
+    return this.authorizationService.canDo('GESTION', 'CLIENTES', 'UPDATE');
+  }
+
+  canDeleteCustomer(): boolean {
+    return this.authorizationService.canDo('GESTION', 'CLIENTES', 'DELETE');
+  }
+
+  canReactivateCustomer(): boolean {
+    return this.authorizationService.canDo('GESTION', 'CLIENTES', 'REACTIVATE');
+  }
+
+  permissionTooltip(allowed: boolean): string {
+    return allowed ? '' : 'No tienes permisos';
+  }
 
   exportCSV() {
     this.dt.exportCSV();
@@ -205,6 +231,23 @@ export class CustomersComponent implements OnInit {
     this.submitted = false;
   }
 
+  reactivateCustomer(customer: Customer) {
+    this.confirmationService.confirm({
+      message: '¿Está seguro de reactivar ' + customer.name + '?',
+      header: 'Confirmar',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.customerService.reactivate(customer.id).subscribe({
+          next: () => {
+            this.reloadCurrentPage();
+            this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Cliente reactivado', life: 3000 });
+          },
+          error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo reactivar cliente' })
+        });
+      }
+    });
+  }
+
   deleteProduct(customer: Customer) {
     this.confirmationService.confirm({
       message: '¿Está seguro de eliminar ' + customer.name + '?',
@@ -286,5 +329,11 @@ export class CustomersComponent implements OnInit {
       default:
         return 'info';
     }
+  }
+
+  private reloadCurrentPage() {
+    const size = this.dt?.rows ?? 10;
+    const page = Math.floor((this.dt?.first ?? 0) / size);
+    this.loadData(page, size, this.nameFilter, this.statusFilter);
   }
 }

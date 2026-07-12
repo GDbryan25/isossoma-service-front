@@ -56,7 +56,7 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
                                 </div>
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Olvidaste tu contraseña?</span>
                             </div>
-                            <p-button label="Iniciar sesión" styleClass="w-full" routerLink="/dashboard"></p-button>
+                            <p-button label="Iniciar sesión" styleClass="w-full" routerLink="/inicio/dashboard"></p-button>
                         </div>
                     </div>
                 </div>

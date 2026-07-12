@@ -20,7 +20,11 @@ export class CustomerService {
   }
 
   update(id: number, body: SaveCustomer): Observable<ApiResponse<Customer>> {
-    return this.http.put<ApiResponse<Customer>>(`${this.baseUrl}/${id}`,body);
+    return this.http.put<ApiResponse<Customer>>(`${this.baseUrl}/${id}`, body);
+  }
+
+  reactivate(id: number): Observable<ApiResponse<Customer>> {
+    return this.http.patch<ApiResponse<Customer>>(`${this.baseUrl}/${id}/reactivate`, {});
   }
 
   delete(id: number): Observable<ApiResponse<number>> {

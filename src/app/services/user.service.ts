@@ -22,6 +22,10 @@ export class UserService {
     return this.http.post<ApiResponse<UserResponse>>(this.baseUrl, request);
   }
 
+  reactivate(id: number): Observable<ApiResponse<UserResponse>> {
+    return this.http.patch<ApiResponse<UserResponse>>(`${this.baseUrl}/${id}/reactivate`, {});
+  }
+
   findById(id: number): Observable<ApiResponse<UserDetailResponse>> {
     return this.http.get<ApiResponse<UserDetailResponse>>(`${this.baseUrl}/${id}`);
   }

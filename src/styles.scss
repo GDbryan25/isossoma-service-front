@@ -1,5 +1,109 @@
-/* You can add global styles to this file, and also import other style files */
 @use './tailwind.css';
 @use './assets/layout/layout.scss';
 @use 'primeicons/primeicons.css';
 @use './assets/demo/demo.scss';
+
+/* Branding theme based on logo palette #243980 / #009d3d / #ada81c */
+:root {
+    --p-primary-color: #243980;
+    --p-primary-contrast-color: #ffffff;
+    --p-secondary-color: #009d3d;
+    --p-secondary-contrast-color: #ffffff;
+    --p-tertiary-color: #ada81c;
+    --p-tertiary-contrast-color: #1f273e;
+    --p-surface-100: #f4f7ff;
+    --p-surface-200: #e8efff;
+    --p-surface-900: #1e2a4a;
+    --p-surface-950: #141c3a;
+    --p-content-background: #ffffff;
+    --p-content-border-color: #d1d9f5;
+    --p-content-hover-background: #edf1ff;
+    --p-surface-hover-background: #edf1ff;
+    --p-overlay-popover-background: rgba(255, 255, 255, 0.95);
+    --p-mask-background: rgba(36, 57, 128, 0.24);
+    --p-text-color: #17233d;
+    --p-text-muted-color: #56607d;
+}
+
+:root[class*='app-dark'] {
+    --p-surface-950: #0f1630;
+    --p-surface-900: #1c274d;
+    --p-surface-100: #1f294e;
+    --p-surface-200: #172244;
+    --p-content-background: #172244;
+    --p-content-border-color: #2b3b71;
+    --p-surface-hover-background: #243467;
+    --p-overlay-popover-background: rgba(23, 34, 68, 0.96);
+    --p-mask-background: rgba(0, 0, 0, 0.36);
+    --p-text-color: #f5f7ff;
+    --p-text-muted-color: #b5bfdd;
+}
+
+/* Force table row and header hover to use the theme hover background */
+.p-datatable-tbody > tr:hover,
+.p-treetable-tbody > tr:hover,
+.p-datatable .p-datatable-tbody > tr:hover,
+.p-treetable .p-treetable-tbody > tr:hover,
+.p-datatable-thead > tr:hover,
+.p-treetable-thead > tr:hover,
+.p-datatable .p-datatable-thead > tr:hover,
+.p-treetable .p-treetable-thead > tr:hover {
+    background-color: var(--p-surface-hover-background) !important;
+}
+
+.p-datatable-tbody > tr:hover > td,
+.p-treetable-tbody > tr:hover > td,
+.p-datatable .p-datatable-tbody > tr:hover > td,
+.p-treetable .p-treetable-tbody > tr:hover > td,
+.p-datatable-thead > tr:hover > th,
+.p-treetable-thead > tr:hover > th,
+.p-datatable .p-datatable-thead > tr:hover > th,
+.p-treetable .p-treetable-thead > tr:hover > th {
+    background-color: transparent !important;
+}
+
+:root {
+    --p-primary-hover: #1f2e70;
+    --p-secondary-hover: #007d33;
+    --p-tertiary-hover: #a99f18;
+    --p-outline-hover: rgba(36, 57, 128, 0.12);
+}
+
+.p-button.p-button-primary {
+    background-color: var(--p-primary-color) !important;
+    border-color: var(--p-primary-color) !important;
+    color: var(--p-primary-contrast-color) !important;
+}
+
+.p-button.p-button-secondary:not(.p-button-outlined),
+.p-button.p-button-success:not(.p-button-outlined) {
+    background-color: var(--p-secondary-color) !important;
+    border-color: var(--p-secondary-color) !important;
+    color: var(--p-secondary-contrast-color) !important;
+}
+
+.p-button.p-button-primary:hover,
+.p-button.p-button-primary:focus {
+    background-color: var(--p-primary-hover);
+    border-color: var(--p-primary-hover);
+}
+
+.p-button.p-button-secondary:not(.p-button-outlined):hover,
+.p-button.p-button-secondary:not(.p-button-outlined):focus,
+.p-button.p-button-success:not(.p-button-outlined):hover,
+.p-button.p-button-success:not(.p-button-outlined):focus {
+    background-color: var(--p-secondary-hover);
+    border-color: var(--p-secondary-hover);
+}
+
+.p-button.p-button-tertiary:hover,
+.p-button.p-button-help:hover,
+.p-button.p-button-info:hover {
+    background-color: rgba(173, 168, 28, 0.14);
+}
+
+.p-button.p-button-outlined:hover,
+.p-button.p-button-text:hover,
+.p-button.p-button-plain:hover {
+    background-color: var(--p-outline-hover);
+}

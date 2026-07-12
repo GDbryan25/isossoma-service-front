@@ -1,18 +1,25 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
+import { AuthService } from '../../services/auth.service';
+import { ApiResponse } from '../../models/ApiResponse';
+import { AuthenticationResponse } from '../../models/auth/authentication/AuthenticationResponse';
 
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, AppFloatingConfigurator],
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, ToastModule, AppFloatingConfigurator],
+    providers: [MessageService],
     template: `
+        <p-toast></p-toast>
         <app-floating-configurator />
         <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
             <div class="flex flex-col items-center justify-center">
@@ -56,7 +63,7 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
                                 </div>
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Olvidaste tu contraseña?</span>
                             </div>
-                            <p-button label="Iniciar sesión" styleClass="w-full" routerLink="/dashboard"></p-button>
+                            <p-button label="Iniciar sesión" styleClass="w-full" [loading]="isSubmitting" (onClick)="onLogin()"></p-button>
                         </div>
                     </div>
                 </div>
@@ -65,9 +72,46 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
     `
 })
 export class Login {
+    isSubmitting: boolean = false;
     email: string = '';
 
     password: string = '';
 
     checked: boolean = false;
+
+    constructor(
+        private authService: AuthService,
+        private messageService: MessageService,
+        private router: Router
+    ) {}
+
+    onLogin(): void {
+        const username = this.email.trim();
+        const password = this.password.trim();
+
+        if (!username || !password) {
+            this.messageService.add({ severity: 'warn', summary: 'Atencion', detail: 'Completa usuario y contrasena' });
+            return;
+        }
+
+        this.isSubmitting = true;
+        this.authService.login({ username, password }).subscribe({
+            next: (response: ApiResponse<AuthenticationResponse>) => {
+                const token = response?.data?.accessToken;
+
+                if (!token || !this.authService.isAuthenticated()) {
+                    this.messageService.add({ severity: 'error', summary: 'Error', detail: response?.message || 'Respuesta de autenticacion invalida' });
+                    this.isSubmitting = false;
+                    return;
+                }
+
+                this.isSubmitting = false;
+                this.router.navigate(['/inicio/dashboard']);
+            },
+            error: () => {
+                this.isSubmitting = false;
+                this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Credenciales invalidas' });
+            }
+        });
+    }
 }

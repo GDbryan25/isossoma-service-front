@@ -1,8 +1,8 @@
 <p-toolbar styleClass="mb-6">
   <ng-template #start>
-    <p-button label="Nuevo" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+    <p-button label="Nuevo" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" [disabled]="!canCreateSupplier()" [pTooltip]="permissionTooltip(canCreateSupplier())" tooltipPosition="top" />
     <p-button severity="secondary" label="Eliminar" icon="pi pi-trash" outlined (onClick)="deleteSelectedSuppliers()"
-      [disabled]="!selectedSuppliers || !selectedSuppliers.length" />
+      [disabled]="!canDeleteSupplier() || !selectedSuppliers || !selectedSuppliers.length" [pTooltip]="permissionTooltip(canDeleteSupplier())" tooltipPosition="top" />
   </ng-template>
 
   <ng-template #end>
@@ -64,8 +64,12 @@
         <p-tag [value]="supplier.status" [severity]="supplier.status === 'ACTIVE' ? 'success' : 'danger'"></p-tag>
       </td>
       <td>
-        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editSupplier(supplier)" />
-        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteSupplier(supplier)" />
+        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editSupplier(supplier)"
+          [disabled]="!canUpdateSupplier()" [pTooltip]="permissionTooltip(canUpdateSupplier())" tooltipPosition="top" />
+        <p-button *ngIf="supplier.status !== 'INACTIVE'" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteSupplier(supplier)"
+          [disabled]="!canDeleteSupplier()" [pTooltip]="permissionTooltip(canDeleteSupplier())" tooltipPosition="top" />
+        <p-button *ngIf="supplier.status === 'INACTIVE'" icon="pi pi-refresh" severity="success" [rounded]="true" [outlined]="true" (click)="reactivateSupplier(supplier)"
+          [disabled]="!canReactivateSupplier()" [pTooltip]="permissionTooltip(canReactivateSupplier())" tooltipPosition="top" />
       </td>
     </tr>
   </ng-template>

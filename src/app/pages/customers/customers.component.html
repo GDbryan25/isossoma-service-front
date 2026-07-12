@@ -1,8 +1,8 @@
 <p-toolbar styleClass="mb-6">
     <ng-template #start>
-        <p-button label="Nuevo" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        <p-button *appCanDo="{ menuKey: 'GESTION', submenuKey: 'CLIENTES', actionKey: 'CREATE' }" label="Nuevo" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
         <p-button severity="secondary" label="Eliminar" icon="pi pi-trash" outlined (onClick)="deleteSelectedCustomers()"
-            [disabled]="!selectedCustomers || !selectedCustomers.length" />
+            [disabled]="!canDeleteCustomer() || !selectedCustomers || !selectedCustomers.length" [pTooltip]="permissionTooltip(canDeleteCustomer())" tooltipPosition="top" />
     </ng-template>
 
     <ng-template #end>
@@ -81,9 +81,11 @@
             </td>
             <td>
                 <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true"
-                    (click)="editProduct(customer)" />
-                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
-                    (click)="deleteProduct(customer)" />
+                    (click)="editProduct(customer)" [disabled]="!canUpdateCustomer()" [pTooltip]="permissionTooltip(canUpdateCustomer())" tooltipPosition="top" />
+                <p-button *ngIf="customer.customerStatus !== 'INACTIVE'" icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+                    (click)="deleteProduct(customer)" [disabled]="!canDeleteCustomer()" [pTooltip]="permissionTooltip(canDeleteCustomer())" tooltipPosition="top" />
+                <p-button *ngIf="customer.customerStatus === 'INACTIVE'" icon="pi pi-refresh" severity="success" [rounded]="true" [outlined]="true"
+                    (click)="reactivateCustomer(customer)" [disabled]="!canReactivateCustomer()" [pTooltip]="permissionTooltip(canReactivateCustomer())" tooltipPosition="top" />
             </td>
         </tr>
     </ng-template>

@@ -25,6 +25,10 @@ export class RoleService {
     return this.http.put<ApiResponse<RoleSimpleResponse>>(`${this.baseUrl}/${id}`, request);
   }
 
+  reactivate(id: number): Observable<ApiResponse<RoleSimpleResponse>> {
+    return this.http.patch<ApiResponse<RoleSimpleResponse>>(`${this.baseUrl}/${id}/reactivate`, {});
+  }
+
   findById(id: number): Observable<ApiResponse<RoleDetailResponse>> {
     return this.http.get<ApiResponse<RoleDetailResponse>>(`${this.baseUrl}/${id}`);
   }

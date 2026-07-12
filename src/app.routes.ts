@@ -7,13 +7,17 @@ import { Notfound } from './app/pages/notfound/notfound';
 import { CustomersComponent } from './app/pages/customers/customers.component';
 import { RateSheetComponent } from './app/pages/rate-sheet/rate-sheet.component';
 import { SuppliersComponent } from './app/pages/suppliers/suppliers.component';
-import { UsersComponent } from './app/pages/users/users.component';
+import { UsersComponent } from './app/pages/security/users/users.component';
+import { RolesComponent } from './app/pages/security/roles/roles.component';
+import { ItemsComponent } from './app/pages/ratecatalog/items/items.component';
+import { ItemSupplierComponent } from './app/pages/ratecatalog/item-supplier/item-supplier.component';
 import { Login } from './app/pages/auth/login';
+import { permissionGuard } from './app/core/auth/permission.guard';
 
 export const appRoutes: Routes = [
     {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'login',
         pathMatch: 'full'
     },
     {
@@ -23,18 +27,29 @@ export const appRoutes: Routes = [
     {
         path: '',
         component: AppLayout,
+        canActivate: [permissionGuard],
         children: [
-            { path: 'dashboard', component: Dashboard },
-            { path: 'gestion/clientes', component: CustomersComponent },
-            { path: 'gestion/tarifarios', component: RateSheetComponent },
-            { path: 'gestion/usuarios', component: UsersComponent },
-            { path: 'gestion/proveedores', component: SuppliersComponent },
+            { path: 'dashboard', redirectTo: 'inicio/dashboard', pathMatch: 'full' },
+            { path: 'inicio/dashboard', component: Dashboard, data: { menuKey: 'INICIO', submenuKey: 'DASHBOARD' } },
+            { path: 'gestion/clientes', component: CustomersComponent, data: { menuKey: 'GESTION', submenuKey: 'CLIENTES' } },
+            { path: 'gestion/tarifarios', component: ItemsComponent, data: { menuKey: 'GESTION', submenuKey: 'TARIFARIOS' } },
+            {
+                path: 'gestion/tarifarios/item-supplier',
+                component: ItemSupplierComponent,
+                data: {
+                    menuKey: 'GESTION',
+                    submenuKey: 'TARIFARIOS',
+                    requiredPermission: 'ITEM_SUPPLIER_WRITE'
+                }
+            },
+            { path: 'gestion/usuarios', component: UsersComponent, data: { menuKey: 'SEGURIDAD', submenuKey: 'USUARIOS' } },
+            { path: 'gestion/proveedores', component: SuppliersComponent, data: { menuKey: 'GESTION', submenuKey: 'PROVEEDORES' } },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
-            { path: 'operaciones/cotizaciones', component: Dashboard },
-            { path: 'seguridad/usuarios', component: UsersComponent },
-            { path: 'seguridad/roles', component: Dashboard }
+            { path: 'operaciones/cotizaciones', component: Dashboard, data: { menuKey: 'OPERACIONES', submenuKey: 'COTIZACIONES' } },
+            { path: 'seguridad/usuarios', component: UsersComponent, data: { menuKey: 'SEGURIDAD', submenuKey: 'USUARIOS' } },
+            { path: 'seguridad/roles', component: RolesComponent, data: { menuKey: 'SEGURIDAD', submenuKey: 'ROLES' } }
         ]
     },
     { path: 'landing', component: Landing },
