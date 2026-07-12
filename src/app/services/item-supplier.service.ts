@@ -8,12 +8,13 @@ import { CreateItemSupplier } from '../models/ratecatalog/item-supplier/request/
 import { UpdateItemSupplier } from '../models/ratecatalog/item-supplier/request/UpdateItemSupplier';
 import { ItemSupplierDetailResponse } from '../models/ratecatalog/item-supplier/response/ItemSupplierDetailResponse';
 import { ItemSupplierPageableFilter } from '../models/ratecatalog/item-supplier/filters/ItemSupplierPageableFilter';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ItemSupplierService {
-  baseUrl: string = 'http://localhost:8080/api/v1/item-supplier';
+  baseUrl: string = `${environment.apiBaseUrl}/api/v1/item-supplier`;
 
   private readonly http = inject(HttpClient);
 

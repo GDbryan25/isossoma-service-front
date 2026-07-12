@@ -6,12 +6,13 @@ import { Customer } from '../models/customers/response/Customer';
 import { Observable } from 'rxjs';
 import { CustomerFilter } from '../models/customers/filters/CustomerFilter';
 import { PageResponse } from '../models/PageResponse';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CustomerService {
-  baseUrl: string = 'http://localhost:8080/api/v1/customer';
+  baseUrl: string = `${environment.apiBaseUrl}/api/v1/customer`;
 
   private readonly http = inject(HttpClient);
 

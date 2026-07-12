@@ -9,12 +9,13 @@ import { UserPageableFilters } from '../models/auth/users/filters/UserPageableFi
 import { PageResponse } from '../models/PageResponse';
 import { PageableResponse } from '../models/PageableResponse';
 import { UpdateUserRequest } from '../models/auth/users/request/UpdateUserRequest';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  baseUrl: string = 'http://localhost:8080/api/v1/user';
+  baseUrl: string = `${environment.apiBaseUrl}/api/v1/user`;
 
   private readonly http = inject(HttpClient);
 

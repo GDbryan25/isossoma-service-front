@@ -8,12 +8,13 @@ import { UpdateRoleRequest } from '../models/auth/roles/request/UpdateRoleReques
 import { RoleDetailResponse } from '../models/auth/roles/response/RoleDetailResponse';
 import { PageResponse } from '../models/PageResponse';
 import { RoleFilters } from '../models/auth/roles/filters/RoleFilters';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoleService {
-  baseUrl: string = 'http://localhost:8080/api/v1/role';
+  baseUrl: string = `${environment.apiBaseUrl}/api/v1/role`;
 
   private readonly http = inject(HttpClient);
 
